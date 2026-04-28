@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VR/XR Parallel Computing Demo — CS 3700</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; background: #000; font-family: 'Courier New', monospace; }
+
+    /* ── HUD: top-left ── */
+    #hud {
+      position: absolute; top: 16px; left: 16px; z-index: 10;
+      pointer-events: none;
+    }
+    #fps {
+      font-size: 38px; font-weight: bold;
+      color: #0f0;
+      transition: color 0.3s;
+    }
+    #fps.warn { color: #ff0; }
+    #fps.bad  { color: #f44; }
+    #target   { font-size: 11px; color: #555; margin-bottom: 10px; }
+
+    #mode-badge {
+      display: inline-block; padding: 5px 14px;
+      font-size: 13px; font-weight: bold; border: 1px solid;
+      margin-bottom: 8px; letter-spacing: 0.05em;
+    }
+    #mode-badge.sequential { color: #f66; border-color: #f66; }
+    #mode-badge.parallel   { color: #6f6; border-color: #6f6; }
+
+    #stats { font-size: 12px; color: #666; line-height: 2.0; }
+    #compute-stat { transition: color 0.3s; }
+    #compute-stat.slow { color: #f88; }
+
+    /* ── Info: top-right ── */
+    #right-panel {
+      position: absolute; top: 16px; right: 16px; z-index: 10;
+      text-align: right; font-size: 12px; color: #444; line-height: 2;
+      pointer-events: none;
+    }
+    #right-panel span { color: #666; }
+
+    /* ── Explanation overlay ── */
+    #explainer {
+      position: absolute; bottom: 16px; right: 16px; z-index: 10;
+      font-size: 12px; color: #666; text-align: left;
+      line-height: 1.7; width: fit-content; max-width: 380px; pointer-events: none;
+      background: rgba(4, 4, 16, 0.78);
+      border: 1px solid #1a1a2e;
+      border-radius: 4px;
+      padding: 10px 14px;
+    }
+    #explainer b { color: #999; display: block; margin-bottom: 4px; }
+
+    /* ── Controls: bottom-left ── */
+    #controls {
+      position: absolute; bottom: 16px; left: 16px; z-index: 10;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .btn {
+      padding: 10px 20px; min-width: 270px;
+      background: rgba(8, 8, 18, 0.88); color: #aaa;
+      border: 1px solid #333; cursor: pointer;
+      font-family: 'Courier New', monospace; font-size: 13px;
+      text-align: left; transition: all 0.15s; user-select: none;
+    }
+    .btn:hover { background: rgba(40, 40, 60, 0.95); color: #fff; }
+    #toggle-btn.sequential { border-color: #c33; color: #f88; }
+    #toggle-btn.parallel   { border-color: #3c3; color: #8f8; }
+    #vr-btn { border-color: #338; color: #88f; }
+    .btn:disabled { opacity: 0.4; cursor: default; }
+  </style>
+</head>
+<body>
+
+<!-- HUD: top-left -->
+<div id="hud">
+  <div id="fps">FPS: --</div>
+  <div id="mode-badge" class="sequential">SEQUENTIAL — Main Thread</div><br>
+  <div id="stats">
+    <span id="obj-stat">Objects: 200</span><br>
+    <span id="ops-stat">Physics ops/frame: 40,000</span><br>
+    <span id="compute-stat">Compute time: --ms</span><br>
+    <span id="worker-stat">Worker thread: idle</span>
+  </div>
+</div>
+
+<!-- Info: top-right -->
+<div id="right-panel">
+  VR/XR Parallel Computing Demo<br>
+  <span id="render-stat">Render time: --ms</span>
+</div>
+
+<!-- Explanation -->
+<div id="explainer">
+  <b>What you're seeing:</b>
+  N-body physics simulation (O(n²)) running on the main render thread vs. a parallel Web Worker.
+  Add objects until FPS drops, then switch to Worker mode — rendering becomes unblocked.
+</div>
+
+<!-- Controls: bottom-left -->
+<div id="controls">
+  <button class="btn sequential" id="toggle-btn" onclick="toggleMode()">
+    ⇄  Switch to Web Worker (Parallel Thread)
+  </button>
+  <button class="btn" onclick="changeObjects(100)">＋  Add 100 Objects  (increase load)</button>
+  <button class="btn" onclick="changeObjects(-100)">－  Remove 100 Objects</button>
+</div>
+
+<!-- Three.js via importmap -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module" src="demo.js"></script>
+</body>
+</html>
