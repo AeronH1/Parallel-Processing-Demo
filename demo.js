@@ -111,7 +111,6 @@ function simulateStep(data, scale = 1) {
     if (Math.abs(a.z) > BOUNDS) { a.z = Math.sign(a.z) * BOUNDS; a.vz *= -0.75; }
   }
 }
-
 // ── Web Worker ────────────────────────────────────────────────────────────────
 // Runs the same physics simulation on a separate thread
 const worker = new Worker('worker.js');
